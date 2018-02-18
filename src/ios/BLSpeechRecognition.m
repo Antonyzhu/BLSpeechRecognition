@@ -4,7 +4,7 @@
 //  Created by Antony Zhu on 2017/4/18.
 //  Copyright © 2017年 Antony Zhu. All rights reserved.
 //
-
+// modified by Antony Zhu on 2018/02/18: keyword "lang", accept language option from js
 
 #import "BLSpeechRecognition.h"
 #import "SpeechManager.h"
@@ -24,6 +24,7 @@
 @property(nonatomic,strong)SFSpeechRecognitionTask *bufferTask;
 @property(nonatomic,strong)AVAudioEngine *bufferEngine;
 @property(nonatomic,strong)AVAudioInputNode *buffeInputNode;
+@property(nonatomic,strong)NSString *lang;
 
 @end
 
@@ -53,6 +54,9 @@
 #pragma mark - 语音录入
 - (void)startListening:(CDVInvokedUrlCommand*)command
 {
+    NSArray *langArr = [command.arguments valueForKey:@"language"];
+    self.lang = langArr[0];
+
     [self.commandDelegate runInBackground:^{
         [self startListeningIMP];
     }];
@@ -62,7 +66,7 @@
     
    dispatch_async(dispatch_get_main_queue(), ^{
 
-       self.bufferRec = [[SFSpeechRecognizer alloc]initWithLocale:[NSLocale localeWithLocaleIdentifier:@"zh_CN"]];
+       self.bufferRec = [[SFSpeechRecognizer alloc]initWithLocale:[NSLocale localeWithLocaleIdentifier:self.lang]];
        self.bufferEngine = [[AVAudioEngine alloc]init];
        self.buffeInputNode = [self.bufferEngine inputNode];
        
